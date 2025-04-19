@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import User from '../models/user.model';
-import { CustomError } from '../utils/customError'; // Optional if using CustomError helper
+import { CustomError } from '../utils/customError';
 
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, age } = req.body;
 
@@ -15,31 +15,35 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       return next(new CustomError('Email already exists', 400));
     }
 
-    // General server error
     next(new CustomError(error.message || 'Server Error', 500));
   }
 };
 
-export const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find();
     res.status(200).json({ success: true, data: users });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error' });
+    next(new CustomError('Failed to fetch users', 500));
   }
 };
 
+const getUserById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findById(req.params.id);
 
-export const getUserById = async (req: Request, res: Response) => {
-    try {
-      const user = await User.findById(req.params.id);
-  
-      if (!user) {
-        throw new CustomError('User not found', 404);
-      }
-  
-      res.status(200).json({ success: true, data: user });
-    } catch (error) {
-      throw error;
+    if (!user) {
+      throw new CustomError('User not found', 404);
     }
-  };
+
+    res.status(200).json({ success: true, data: user });
+  } catch (error: any) {
+    next(new CustomError(error.message || 'Server Error', 500));
+  }
+};
+
+export default {
+  createUser,
+  getUsers,
+  getUserById,
+};

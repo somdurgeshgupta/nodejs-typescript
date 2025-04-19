@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User from '../models/user.model';
 import { CustomError } from '../utils/customError'; // Optional if using CustomError helper
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, age } = req.body;
 
@@ -10,9 +10,13 @@ export const createUser = async (req: Request, res: Response) => {
     const savedUser = await user.save();
 
     res.status(201).json({ success: true, data: savedUser });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
+  } catch (error: any) {
+    if (error.code === 11000) {
+      return next(new CustomError('Email already exists', 400));
+    }
+
+    // General server error
+    next(new CustomError(error.message || 'Server Error', 500));
   }
 };
 

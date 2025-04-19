@@ -1,0 +1,26 @@
+{
+  "name": "nodejstypescript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn src/index.ts",
+    "build": "cross-env NODE_ENV=production tsc -p tsconfig.prod.json",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Atharva Gupta",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "cross-env": "^7.0.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
